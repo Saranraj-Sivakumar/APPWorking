@@ -1,12 +1,9 @@
-@import com.fasterxml.jackson.databind.JsonNode
-@import scala.jdk.CollectionConverters._
-
-@(channelInfo: JsonNode, videos: java.util.List[JsonNode])
+@(channelProfile: com.fasterxml.jackson.databind.JsonNode, videos: java.util.List[com.fasterxml.jackson.databind.JsonNode])
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>@channelInfo.path("snippet").path("title").asText("Channel Title")</title>
+        <title>@channelProfile.path("snippet").path("title").asText("Channel Title")</title>
         <style>
                 body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; }
                 h1 { color: #333; }
@@ -17,29 +14,24 @@
         </style>
     </head>
     <body>
-        <h1>@channelInfo.path("snippet").path("title").asText("Channel Title")</h1>
-        <p><strong>Description:</strong> @channelInfo.path("snippet").path("description").asText("No Description Available")</p>
-        <p><strong>Subscribers:</strong> @channelInfo.path("statistics").path("subscriberCount").asText("N/A")</p>
-        <p><strong>Channel Creation Date:</strong> @channelInfo.path("snippet").path("publishedAt").asText("N/A")</p>
-        <p><strong>Total Videos:</strong> @channelInfo.path("statistics").path("videoCount").asText("N/A")</p>
-        <p><strong>Total Views:</strong> @channelInfo.path("statistics").path("viewCount").asText("N/A")</p>
+        <h1>@channelProfile.path("snippet").path("title").asText("Channel Title")</h1>
+        <p><strong>Description:</strong> @channelProfile.path("snippet").path("description").asText("No Description Available")</p>
+        <p><strong>Subscribers:</strong> @channelProfile.path("statistics").path("subscriberCount").asText("N/A")</p>
+        <p><strong>Channel Creation Date:</strong> @channelProfile.path("snippet").path("publishedAt").asText("N/A")</p>
+        <p><strong>Total Videos:</strong> @channelProfile.path("statistics").path("videoCount").asText("N/A")</p>
+        <p><strong>Total Views:</strong> @channelProfile.path("statistics").path("viewCount").asText("N/A")</p>
 
         <h2>Latest Videos</h2>
         <ul class="video-list">
-        @for((video, index) <- videos.asScala.zipWithIndex) {
+        @for((video, index) <- videos.zipWithIndex) {
             <li class="video-item">
                 <div class="video-thumbnail">
-                    <img src="@video.path("snippet").path("thumbnails").path("default").path("url").asText()" alt="Thumbnail">
+                    <img src="@video.path("snippet").path("thumbnails").path("default").path("url").asText("Thumbnail Not Available")" alt="Thumbnail">
                 </div>
                 <div class="video-details">
-                    <p><strong>@(index + 1). Title:</strong>
-                        <a href="https://www.youtube.com/watch?v=@{
-                            // Determine the videoId by checking both possible paths
-                            val idNode = video.path("id").path("videoId")
-                            val resourceIdNode = video.path("snippet").path("resourceId").path("videoId")
-                            if (!idNode.isMissingNode && idNode.asText() != "") idNode.asText()
-                            else resourceIdNode.asText("N/A")
-                        }" target="_blank">
+                    <p>
+                        <strong>@(index + 1). Title:</strong>
+                        <a href="https://www.youtube.com/watch?v=@{video.path("videoId").asText("N/A")}" target="_blank">
                         @video.path("snippet").path("title").asText("Untitled Video")
                         </a>
                     </p>
